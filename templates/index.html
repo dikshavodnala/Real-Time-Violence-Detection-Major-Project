@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violence Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h2 class="title-box">Violence Detection</h2>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="container">
+            <label for="videoInput" class="custom-upload">UPLOAD VIDEO</label>
+            <span id="fileName">No file chosen</span>
+            <input type="file" name="videoInput" id="videoInput" accept="video/mp4, video/avi">
+
+
+            <video id="videoPlayer" controls></video>
+
+            <button type="submit" class="detect-btn">Detect</button>
+        </div>
+    </form>
+
+    <div class="output">
+        <p id="result">Prediction will appear here...</p>
+    </div>
+
+    <script>
+
+        const videoInput = document.getElementById('videoInput');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const resultText = document.getElementById('result');
+
+
+        videoInput.addEventListener("change", function () {
+            let fileName = this.files[0] ? this.files[0].name : "No file chosen";
+            document.getElementById("fileName").textContent = fileName;
+
+            const file = this.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                videoPlayer.src = url;
+                videoPlayer.style.display = "block";
+                videoPlayer.play();
+            }
+        });
+
+
+        document.getElementById("uploadForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            let formData = new FormData();
+            let fileInput = document.getElementById("videoInput").files[0];
+
+            if (!fileInput) {
+                alert("Please select a video file.");
+                return;
+            }
+
+            formData.append("videoInput", fileInput);
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultText.innerText = "Error: " + data.error;
+                } else {
+                    resultText.innerText = data.prediction;
+                }
+            })
+            .catch(error => {
+                resultText.innerText = "An error occurred. Please try again.";
+                console.error("Fetch error:", error);
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Crime Detection System</title>-->
+<!--    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">-->
+<!--</head>-->
+<!--<body>-->
+
+<!--    <h2 class="title-box">Anomaly Detection</h2>-->
+
+<!--    <form id="uploadForm" enctype="multipart/form-data">-->
+<!--        <div class="container">-->
+<!--            <label for="videoInput" class="custom-upload">UPLOAD VIDEO</label>-->
+<!--            <span id="fileName">No file chosen</span>-->
+<!--            <input type="file" name="videoInput" id="videoInput" accept="video/mp4, video/avi">-->
+<!--            <button type="submit" class="detect-btn">Detect</button>-->
+<!--        </div>-->
+<!--    </form>-->
+
+<!--    <div class="output">-->
+<!--        <p id="result">Prediction will appear here...</p>-->
+<!--    </div>-->
+
+<!--    <script>-->
+
+<!--        document.getElementById("videoInput").addEventListener("change", function () {-->
+<!--    let fileName = this.files[0] ? this.files[0].name : "No file chosen";-->
+<!--    document.getElementById("fileName").textContent = fileName;-->
+<!--});-->
+
+<!--document.getElementById("uploadForm").addEventListener("submit", function (event) {-->
+<!--    event.preventDefault(); // Prevent default form submission-->
+
+<!--    let formData = new FormData();-->
+<!--    let fileInput = document.getElementById("videoInput").files[0];-->
+
+<!--    if (!fileInput) {-->
+<!--        alert("Please select a video file.");-->
+<!--        return;-->
+<!--    }-->
+
+<!--    formData.append("videoInput", fileInput);-->
+
+<!--    fetch("/upload", {-->
+<!--        method: "POST",-->
+<!--        body: formData-->
+<!--    })-->
+<!--    .then(response => response.json())-->
+<!--    .then(data => {-->
+<!--        if (data.error) {-->
+<!--            document.getElementById("result").innerText = "Error: " + data.error;-->
+<!--        } else {-->
+<!--            document.getElementById("result").innerText = data.prediction;  // Fix: Correct JSON key-->
+<!--        }-->
+<!--    })-->
+<!--    .catch(error => {-->
+<!--        document.getElementById("result").innerText = "An error occurred. Please try again.";-->
+<!--        console.error("Fetch error:", error); // Debugging in console-->
+<!--    });-->
+<!--});-->
+
+<!--    </script>-->
+
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Crime Detection System</title>-->
+<!--    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">-->
+<!--</head>-->
+<!--<body>-->
+<!--    -->
+<!--        <h2>Anomaly Detection</h2>-->
+<!--        <form action="/upload" method="post" enctype="multipart/form-data">-->
+<!--         <div class="container">-->
+<!--            <label for="videoInput" class="custom-upload">Upload Video</label>-->
+<!--            <span id="fileName">No file chosen</span>-->
+<!--            <input type="file" name="videoInput" id="videoInput" accept="video/mp4, video/avi">-->
+<!--            <button type="submit">Detection</button>-->
+<!--        </div>-->
+<!--        </form>-->
+
+<!--        <div class="output">-->
+<!--            <p id="result">{{prediction_text}}</p>-->
+<!--        </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    document.getElementById("videoInput").addEventListener("change", function () {-->
+<!--        let fileName = this.files[0] ? this.files[0].name : "No file chosen";-->
+<!--        document.getElementById("fileName").textContent = fileName;-->
+<!--    });-->
+<!--    -->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
